@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CampusConnect – Search</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+
+  <body class="bg-gray-50 min-h-screen flex flex-col">
+
+    <!-- HEADER -->
+    <header class="p-4 border-b flex justify-between items-center bg-white">
+      <button
+        onclick="goBack()"
+        class="text-indigo-600 font-bold text-sm"
+      >
+        ⬅ Back
+      </button>
+
+      <h1 class="text-xl font-bold italic text-indigo-600">
+        Search Events
+      </h1>
+
+      <div class="w-8"></div>
+    </header>
+
+    <!-- SEARCH BAR -->
+    <div class="p-4 bg-white border-b">
+      <input
+        id="search-input"
+        type="text"
+        placeholder="Search events or colleges..."
+        class="w-full p-3 bg-gray-100 rounded-xl outline-none"
+        oninput="filterEvents()"
+      />
+    </div>
+
+    <!-- RESULTS -->
+    <div
+      id="results"
+      class="flex-1 overflow-y-auto p-4 space-y-4"
+    ></div>
+
+    <!-- SCRIPT -->
+    <script>
+      let allEvents = [];
+
+      async function loadEvents() {
+        const res = await fetch("/api/events");
+        allEvents = await res.json();
+        renderEvents(allEvents);
+      }
+
+      function renderEvents(events) {
+        const container = document.getElementById("results");
+        container.innerHTML = "";
+
+        if (events.length === 0) {
+          container.innerHTML = `
+            <p class="text-center text-gray-400 mt-10">
+              No events found
+            </p>
+          `;
+          return;
+        }
+
+        events.reverse().forEach((post) => {
+          container.innerHTML += `
+            <div class="bg-white border rounded-2xl shadow-sm overflow-hidden">
+              <div class="p-4 flex items-center gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                  ${post.organizer[0]}
+                </div>
+                <div>
+                  <p class="text-sm font-bold">${post.organizer}</p>
+                  <p class="text-[10px] text-gray-400 uppercase tracking-tighter">
+                    Official College Post
+                  </p>
+                </div>
+              </div>
+
+              <div class="px-4 pb-4">
+                <h4 class="font-bold text-lg leading-tight mb-2">
+                  ${post.title}
+                </h4>
+                <p class="text-gray-600 text-sm">
+                  ${post.desc || ""}
+                </p>
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      function filterEvents() {
+        const q = document
+          .getElementById("search-input")
+          .value.toLowerCase();
+
+        const filtered = allEvents.filter(
+          (e) =>
+            e.title.toLowerCase().includes(q) ||
+            e.organizer.toLowerCase().includes(q)
+        );
+
+        renderEvents(filtered);
+      }
+
+      function goBack() {
+        window.location.href = "index.html";
+      }
+
+      loadEvents();
+    </script>
+
+  </body>
+</html>

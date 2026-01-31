@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CampusConnect</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+
+  <body class="bg-gray-50 font-sans h-screen overflow-hidden">
+    <!-- ENTRY -->
+    <section
+      id="screen-entry"
+      class="h-full flex flex-col items-center justify-center bg-indigo-700 text-white p-6"
+    >
+      <h1 class="text-5xl font-black italic mb-2 tracking-tighter">
+        CampusConnect
+      </h1>
+      <p class="text-indigo-200 mb-12">Every event. Every college. One app.</p>
+
+      <div class="w-full max-w-xs space-y-4">
+        <button
+          onclick="showScreen('screen-clg-signup')"
+          class="w-full bg-white text-indigo-700 font-bold py-4 rounded-2xl shadow-lg hover:bg-gray-100 transition"
+        >
+          I am a College Admin
+        </button>
+        <button
+          onclick="showScreen('screen-stu-signup')"
+          class="w-full bg-indigo-500 text-white border border-indigo-400 font-bold py-4 rounded-2xl shadow-lg hover:bg-indigo-600 transition"
+        >
+          I am a Student
+        </button>
+      </div>
+    </section>
+
+    <!-- COLLEGE SIGNUP -->
+    <section
+      id="screen-clg-signup"
+      class="hidden h-full flex flex-col p-6 bg-white"
+    >
+      <h2 class="text-2xl font-bold mb-6">Register your College</h2>
+      <input
+        type="text"
+        id="reg-clg-name"
+        placeholder="Full College Name"
+        class="w-full p-4 bg-gray-100 rounded-xl mb-4 outline-none"
+      />
+      <input
+        type="email"
+        id="reg-clg-email"
+        placeholder="Official Email"
+        class="w-full p-4 bg-gray-100 rounded-xl mb-6 outline-none"
+      />
+      <button
+        onclick="finishSignup('college')"
+        class="mt-auto w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl"
+      >
+        Create Account
+      </button>
+    </section>
+
+    <!-- STUDENT SIGNUP -->
+    <section
+      id="screen-stu-signup"
+      class="hidden h-full flex flex-col p-6 bg-white"
+    >
+      <h2 class="text-2xl font-bold mb-6">Student Profile</h2>
+      <div class="space-y-4">
+        <input
+          type="text"
+          id="reg-stu-name"
+          placeholder="Your Full Name"
+          class="w-full p-4 bg-gray-100 rounded-xl outline-none"
+        />
+        <input
+          type="text"
+          id="reg-stu-clg"
+          placeholder="Your College Name"
+          class="w-full p-4 bg-gray-100 rounded-xl outline-none"
+        />
+        <input
+          type="text"
+          id="reg-stu-roll"
+          placeholder="Roll Number / ID"
+          class="w-full p-4 bg-gray-100 rounded-xl outline-none"
+        />
+      </div>
+      <button
+        onclick="finishSignup('student')"
+        class="mt-auto w-full bg-indigo-600 text-white font-bold py-4 rounded-2xl"
+      >
+        Start Exploring
+      </button>
+    </section>
+
+    <!-- MAIN APP -->
+    <section id="screen-app" class="hidden h-full flex flex-col">
+      <header class="p-4 border-b flex justify-between items-center bg-white">
+        <!-- BACK BUTTON -->
+        <button
+          id="back-btn"
+          onclick="goBack()"
+          class="text-indigo-600 font-bold text-sm hidden"
+        >
+          ⬅ Back
+        </button>
+
+        <h1 class="text-xl font-bold italic text-indigo-600">CampusConnect</h1>
+
+        <div
+          id="user-badge"
+          class="bg-indigo-100 text-indigo-700 text-xs font-bold px-3 py-1 rounded-full uppercase"
+        ></div>
+      </header>
+
+      <div
+        id="feed-container"
+        class="flex-1 overflow-y-auto p-4 space-y-6 pb-24"
+      ></div>
+
+      <div class="border-t bg-white p-4 flex justify-around items-center">
+        <i class="fas fa-home text-indigo-600 text-xl"></i>
+
+        <button
+          id="post-trigger"
+          onclick="openPostModal()"
+          class="hidden bg-indigo-600 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg"
+        >
+          <i class="fas fa-plus"></i>
+        </button>
+
+        <i class="fas fa-search text-gray-400 text-xl"></i>
+        <i
+          class="fas fa-user text-gray-400 text-xl cursor-pointer"
+          onclick="openProfile()"
+        ></i>
+      </div>
+    </section>
+
+    <!-- POST MODAL -->
+    <div
+      id="post-modal"
+      class="hidden fixed inset-0 bg-black/50 z-50 flex items-end"
+    >
+      <div class="bg-white w-full rounded-t-3xl p-6 animate-slide-up">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-bold text-lg">New Event Post</h3>
+          <button onclick="closePostModal()" class="text-gray-400 text-xl">
+            &times;
+          </button>
+        </div>
+        <input
+          id="post-title"
+          type="text"
+          placeholder="Event Title"
+          class="w-full p-3 bg-gray-100 rounded-lg mb-3"
+        />
+        <textarea
+          id="post-desc"
+          placeholder="Describe the event..."
+          class="w-full p-3 bg-gray-100 rounded-lg h-32 mb-4"
+        ></textarea>
+        <button
+          onclick="submitPost()"
+          class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl"
+        >
+          Post to Feed
+        </button>
+      </div>
+    </div>
+
+    <!-- SCRIPT -->
+    <script>
+      const API_BASE = 'http://localhost:3000';
+      let user = null;
+
+      function showScreen(screenId) {
+        document
+          .querySelectorAll('section')
+          .forEach((s) => s.classList.add('hidden'));
+
+        document.getElementById(screenId).classList.remove('hidden');
+
+        const backBtn = document.getElementById('back-btn');
+        if (screenId === 'screen-entry') {
+          backBtn.classList.add('hidden');
+        } else {
+          backBtn.classList.remove('hidden');
+        }
+      }
+
+      function goBack() {
+        showScreen('screen-entry');
+      }
+
+      function finishSignup(role) {
+        if (role === 'college') {
+          user = { role, name: document.getElementById('reg-clg-name').value };
+        } else {
+          user = {
+            role,
+            name: document.getElementById('reg-stu-name').value,
+            clg: document.getElementById('reg-stu-clg').value,
+            roll: document.getElementById('reg-stu-roll').value,
+          };
+        }
+
+        if (!user.name) return alert('Please fill details');
+
+        document.getElementById('user-badge').innerText = user.name;
+        if (user.role === 'college')
+          document.getElementById('post-trigger').classList.remove('hidden');
+
+        showScreen('screen-app');
+        loadFeed();
+      }
+
+      async function loadFeed() {
+        const res = await fetch(`${API_BASE}/api/events`);
+        const posts = await res.json();
+
+        const container = document.getElementById('feed-container');
+        container.innerHTML = '';
+
+        posts.reverse().forEach((post) => {
+          container.innerHTML += `
+          <div class="bg-white border rounded-2xl shadow-sm overflow-hidden">
+            <div class="p-4 flex items-center gap-3">
+              <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                ${post.organizer[0]}
+              </div>
+              <div>
+                <p class="text-sm font-bold">${post.organizer}</p>
+                <p class="text-[10px] text-gray-400 uppercase tracking-tighter">Official College Post</p>
+              </div>
+            </div>
+            <div class="px-4 pb-4">
+              <h4 class="font-bold text-lg leading-tight mb-2">${post.title}</h4>
+              <p class="text-gray-600 text-sm">${post.desc || ''}</p>
+            </div>
+            <div class="p-4 bg-gray-50 flex justify-between items-center border-t">
+              <button onclick="register('${post.title}')" class="bg-indigo-600 text-white text-sm px-6 py-2 rounded-full font-bold">
+                Register
+              </button>
+            </div>
+          </div>
+        `;
+        });
+      }
+
+      function openPostModal() {
+        document.getElementById('post-modal').classList.remove('hidden');
+      }
+
+      function closePostModal() {
+        document.getElementById('post-modal').classList.add('hidden');
+      }
+
+      async function submitPost() {
+        const title = document.getElementById('post-title').value;
+        const desc = document.getElementById('post-desc').value;
+
+        if (!title) {
+          alert('Title is required');
+          return;
+        }
+
+        await fetch(`${API_BASE}/api/events`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, desc, organizer: user.name }),
+        });
+
+        closePostModal();
+        loadFeed();
+      }
+
+      function register(eventTitle) {
+        if (user.role === 'college') return alert("Admins can't register!");
+        alert(
+          `SUCCESS!\nRegistered for: ${eventTitle}\nDetails: ${user.name} from ${user.clg}`,
+        );
+        function openProfile() {
+          localStorage.setItem('campusUser', JSON.stringify(user));
+          window.location.href = 'profile.html';
+        }
+      }
+    </script>
+
+    <style>
+      @keyframes slide-up {
+        from {
+          transform: translateY(100%);
+        }
+        to {
+          transform: translateY(0);
+        }
+      }
+      .animate-slide-up {
+        animation: slide-up 0.3s ease-out;
+      }
+    </style>
+  </body>
+</html>
