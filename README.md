@@ -15,6 +15,8 @@ CampusConnect is a web-based platform designed to help students and college admi
 - API: RESTful services
 
 ## 📂 Project Structure
+
+```text
 ├── index.html
 ├── profile.html
 ├── search.html
