@@ -24,6 +24,7 @@ CampusConnect is a web-based platform designed to help students and college admi
 ├── server.css
 ├── package.json
 └── README.md
+```
 
 ## 👥 Team Members
 
